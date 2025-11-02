@@ -49,7 +49,7 @@ RUN bash -c "source ~/.nvm/nvm.sh && \
     cd /tmp/groq-code-cli && \
     npm install && \
     npm run build && \
-    npm link && \
+    npm install -g . && \
     cd / && \
     rm -rf /tmp/groq-code-cli"
 
