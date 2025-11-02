@@ -43,8 +43,15 @@ RUN ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom} && \
 # Install Claude Code CLI
 RUN bash -c "source ~/.nvm/nvm.sh && npm install -g @anthropic-ai/claude-code"
 
-# Install groq-code-cli
-RUN bash -c "source ~/.nvm/nvm.sh && npm install -g groq-code-cli@latest"
+# Install groq-code-cli (from source)
+RUN bash -c "source ~/.nvm/nvm.sh && \
+    git clone https://github.com/build-with-groq/groq-code-cli.git /tmp/groq-code-cli && \
+    cd /tmp/groq-code-cli && \
+    npm install && \
+    npm run build && \
+    npm link && \
+    cd / && \
+    rm -rf /tmp/groq-code-cli"
 
 # Set zsh as default shell
 USER root
