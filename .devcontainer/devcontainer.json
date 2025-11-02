@@ -1,5 +1,5 @@
 {
-  "name": "Secure Development Environment",
+  "name": "Claude Code Isolated Environment",
   "build": {
     "dockerfile": "Dockerfile"
   },
@@ -17,14 +17,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-vscode-remote.remote-containers",
-        "ms-python.python",
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next",
-        "rust-lang.rust-analyzer",
-        "golang.go",
-        "vscodevim.vim"
+        "ms-vscode-remote.remote-containers"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
