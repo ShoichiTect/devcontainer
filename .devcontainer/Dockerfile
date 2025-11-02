@@ -43,6 +43,9 @@ RUN ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom} && \
 # Install Claude Code CLI
 RUN bash -c "source ~/.nvm/nvm.sh && npm install -g @anthropic-ai/claude-code"
 
+# Install groq-code-cli
+RUN bash -c "source ~/.nvm/nvm.sh && npm install -g groq-code-cli@latest"
+
 # Set zsh as default shell
 USER root
 RUN chsh -s $(which zsh) vscode

@@ -13,8 +13,9 @@ This template provides a sandboxed container environment where AI agents like Cl
 ## 🛠️ Included Tools
 
 ### Core Requirements
-- **Node.js** (via nvm) - Required for Claude Code CLI
+- **Node.js** (via nvm) - Required for AI CLI tools
 - **Claude Code CLI** - Anthropic's AI coding assistant
+- **groq-code-cli** - Groq's AI coding assistant
 - **Git** - Version control
 - **Docker** (Docker-in-Docker) - Container management
 
@@ -92,9 +93,9 @@ devcontainer up --workspace-folder /path/to/your/project
 devcontainer exec --workspace-folder /path/to/your/project zsh
 ```
 
-## 🚀 Claude Dev Command (Recommended)
+## 🚀 Development Commands (Recommended)
 
-For the easiest experience, add this function to your `~/.zshrc`:
+For the easiest experience, add these functions to your `~/.zshrc`:
 
 ```bash
 # Claude Code devcontainer launcher
@@ -112,6 +113,22 @@ claude-dev() {
 
   devcontainer exec --workspace-folder "$TARGET_DIR" zsh -i -c "cd /workspaces/$(basename "$TARGET_DIR") && claude"
 }
+
+# groq-code-cli devcontainer launcher (same as claude-dev but runs groq)
+groq-dev() {
+  local TARGET_DIR="${1:-.}"
+  TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+
+  if [ ! -d "$TARGET_DIR/.devcontainer" ]; then
+    echo "Error: No .devcontainer found in $TARGET_DIR"
+    return 1
+  fi
+
+  local CONTAINER_INFO=$(devcontainer up --workspace-folder "$TARGET_DIR" 2>&1)
+  local CONTAINER_ID=$(echo "$CONTAINER_INFO" | grep -o '"containerId":"[^"]*"' | head -1 | cut -d'"' -f4)
+
+  devcontainer exec --workspace-folder "$TARGET_DIR" zsh -i -c "cd /workspaces/$(basename "$TARGET_DIR") && groq"
+}
 ```
 
 After adding the function, reload your shell:
@@ -124,16 +141,22 @@ source ~/.zshrc
 ```bash
 # Navigate to any project with .devcontainer
 cd /path/to/your/project
+
+# Launch Claude Code CLI
 claude-dev
+
+# Or launch groq-code-cli
+groq-dev
 
 # Or specify a directory
 claude-dev /path/to/another/project
+groq-dev /path/to/another/project
 ```
 
 ### What it does
 1. ✅ Checks if `.devcontainer` exists in the target directory
 2. ✅ Starts the devcontainer (or connects to existing one)
-3. ✅ Automatically launches Claude Code CLI inside the container
+3. ✅ Automatically launches the specified AI CLI tool (claude or groq) inside the container
 4. ✅ Works with any project that has a `.devcontainer` directory
 
 ## ⚙️ Configuration Details
@@ -210,7 +233,7 @@ Aliases are automatically created by setup.sh:
 ## 🎯 Use Cases
 
 This template is perfect for:
-- **AI-Assisted Development** - Run Claude Code safely in isolation
+- **AI-Assisted Development** - Run AI coding assistants (Claude Code, groq) safely in isolation
 - **Untrusted Code Execution** - Test or run code without host access
 - **Secure Development** - Prevent accidental system modifications
 - **Learning & Experimentation** - Safe environment for trying new tools
@@ -226,12 +249,15 @@ The following ports are automatically forwarded:
 
 ## 📝 Tips & Tricks
 
-### Using Claude Code
+### Using AI CLI Tools
 ```bash
 # Start Claude Code CLI
 claude
 
-# Claude Code will have access to:
+# Or start groq-code-cli
+groq
+
+# Both tools will have access to:
 # - Project files in the workspace
 # - Git commands
 # - Docker commands
