@@ -4,6 +4,11 @@ set -e
 
 echo "🚀 Starting personal development environment setup..."
 
+# Get the directory of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEVCONTAINER_DIR="$(dirname "$SCRIPT_DIR")"
+DOTFILES_DIR="$DEVCONTAINER_DIR/dotfiles"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -36,12 +41,12 @@ fi
 
 # Copy dotfiles
 print_status "Setting up dotfiles..."
-cp /workspaces/devcontainer/dotfiles/.zshrc ~/.zshrc
-cp /workspaces/devcontainer/dotfiles/.tmux.conf ~/.tmux.conf
+cp "$DOTFILES_DIR/.zshrc" ~/.zshrc
+cp "$DOTFILES_DIR/.tmux.conf" ~/.tmux.conf
 
 # Create nvim config directory
 mkdir -p ~/.config/nvim/lua/config
-cp -r /workspaces/devcontainer/dotfiles/nvim/* ~/.config/nvim/
+cp -r "$DOTFILES_DIR/nvim/"* ~/.config/nvim/
 
 print_success "Dotfiles copied successfully"
 

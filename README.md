@@ -38,41 +38,66 @@
 devcontainer/
 ├── .devcontainer/
 │   ├── devcontainer.json    # VS Code devcontainer configuration
-│   └── Dockerfile          # Custom development environment
-├── dotfiles/
-│   ├── .zshrc              # Zsh configuration
-│   ├── .tmux.conf          # Tmux configuration
-│   └── nvim/               # Neovim configuration
-│       ├── init.lua
-│       └── lua/config/
-├── scripts/
-│   └── setup.sh            # Automated setup script
+│   ├── Dockerfile          # Custom development environment
+│   ├── dotfiles/           # Dotfiles for development environment
+│   │   ├── .zshrc          # Zsh configuration
+│   │   ├── .tmux.conf      # Tmux configuration
+│   │   └── nvim/           # Neovim configuration
+│   └── scripts/
+│       └── setup.sh        # Automated setup script
 ├── templates/              # Project templates (add your own)
 └── README.md              # This file
 ```
 
 ## 🚀 Quick Start
 
-### 1. Clone this repository
+### Option 1: Use as a Template
+
+1. **Copy `.devcontainer` to your project**
+```bash
+cp -r /path/to/this/repo/.devcontainer /path/to/your/project/
+```
+
+2. **Open your project in VS Code**
+```bash
+cd /path/to/your/project
+code .
+```
+
+3. **Reopen in Container**
+- Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
+- Type "Remote-Containers: Reopen in Container"
+- Wait for the container to build and start
+
+### Option 2: Use This Repository Directly
+
+1. **Clone this repository**
 ```bash
 git clone <your-repo-url>
 cd devcontainer
 ```
 
-### 2. Open in VS Code
+2. **Open in VS Code**
 ```bash
 code .
 ```
 
-### 3. Reopen in Container
+3. **Reopen in Container**
 - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
 - Type "Remote-Containers: Reopen in Container"
 - Wait for the container to build and start
 
-### 4. Post-Setup
-After the container starts, the setup script will run automatically. You can also run it manually:
+### Option 3: CLI Only (Without VS Code)
+
 ```bash
-bash /workspaces/devcontainer/scripts/setup.sh
+# Install devcontainer CLI
+npm install -g @devcontainers/cli
+
+# Start the container
+devcontainer up --workspace-folder /path/to/your/project
+
+# Enter the container
+devcontainer exec --workspace-folder /path/to/your/project zsh
 ```
 
 ## ⚙️ Configuration Details
@@ -137,10 +162,22 @@ Modify the `extensions` array in `.devcontainer/devcontainer.json`.
 
 ## 🛡️ Security Features
 
-- SSH key mounting (your host SSH keys are available)
-- Git config inheritance (your host git settings)
-- No secrets in the container image
-- Separate user (vscode) for better isolation
+### Sandboxing
+- **Read-only root filesystem**: System files cannot be modified
+- **No privilege escalation**: `--security-opt=no-new-privileges` prevents sudo
+- **Dropped capabilities**: All Linux capabilities removed with `--cap-drop=ALL`
+- **Isolated workspace**: Only project directory is mounted, host filesystem is inaccessible
+
+### Access Control
+- **SSH keys**: Mounted as read-only from host
+- **Git config**: Copied from host (modifiable in container)
+- **No host access**: Container cannot access files outside project directory
+- **Separate user**: Runs as `vscode` user, not root
+
+### Data Persistence
+- **Volume mount**: `/home/vscode` persisted in named volume
+- **Claude Code settings**: Saved in volume (survives container restarts)
+- **No secrets in image**: SSH keys and configs mounted at runtime only
 
 ## 🎯 Use Cases
 
