@@ -92,6 +92,50 @@ devcontainer up --workspace-folder /path/to/your/project
 devcontainer exec --workspace-folder /path/to/your/project zsh
 ```
 
+## 🚀 Claude Dev Command (Recommended)
+
+For the easiest experience, add this function to your `~/.zshrc`:
+
+```bash
+# Claude Code devcontainer launcher
+claude-dev() {
+  local TARGET_DIR="${1:-.}"
+  TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+
+  if [ ! -d "$TARGET_DIR/.devcontainer" ]; then
+    echo "Error: No .devcontainer found in $TARGET_DIR"
+    return 1
+  fi
+
+  local CONTAINER_INFO=$(devcontainer up --workspace-folder "$TARGET_DIR" 2>&1)
+  local CONTAINER_ID=$(echo "$CONTAINER_INFO" | grep -o '"containerId":"[^"]*"' | head -1 | cut -d'"' -f4)
+
+  devcontainer exec --workspace-folder "$TARGET_DIR" zsh -i -c "cd /workspaces/$(basename "$TARGET_DIR") && claude"
+}
+```
+
+After adding the function, reload your shell:
+```bash
+source ~/.zshrc
+```
+
+### Usage
+
+```bash
+# Navigate to any project with .devcontainer
+cd /path/to/your/project
+claude-dev
+
+# Or specify a directory
+claude-dev /path/to/another/project
+```
+
+### What it does
+1. ✅ Checks if `.devcontainer` exists in the target directory
+2. ✅ Starts the devcontainer (or connects to existing one)
+3. ✅ Automatically launches Claude Code CLI inside the container
+4. ✅ Works with any project that has a `.devcontainer` directory
+
 ## ⚙️ Configuration Details
 
 ### Zsh Configuration
