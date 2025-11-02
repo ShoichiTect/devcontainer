@@ -198,6 +198,7 @@ Aliases are automatically created by setup.sh:
 ### Access Control
 - **SSH keys**: Mounted as read-only from host
 - **Git config**: Copied from host (modifiable in container)
+- **Environment variables**: Host `.env` file is isolated; container uses empty `.env.template`
 - **No host access**: Container cannot access files outside project directory
 - **Separate user**: Runs as `vscode` user, not root
 
@@ -248,6 +249,9 @@ cd /workspaces && touch test.txt  # Should succeed (workspace is writable)
 
 # Verify no host access
 ls /Users  # Should fail or show empty (not host /Users)
+
+# Verify .env isolation
+cat .env  # Should show empty template (not host .env with secrets)
 ```
 
 ### Development Workflow

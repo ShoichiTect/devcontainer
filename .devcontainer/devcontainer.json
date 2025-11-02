@@ -30,7 +30,7 @@
     }
   },
   "forwardPorts": [3000, 8000, 8080, 5173],
-  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/setup.sh && cp /tmp/host-gitconfig /home/vscode/.gitconfig 2>/dev/null || true && git config --global --add safe.directory ${containerWorkspaceFolder}",
+  "postCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/setup.sh && cp /tmp/host-gitconfig /home/vscode/.gitconfig 2>/dev/null || true && git config --global --add safe.directory ${containerWorkspaceFolder} && cp ${containerWorkspaceFolder}/.devcontainer/.env.template ${containerWorkspaceFolder}/.env 2>/dev/null || true",
   "remoteUser": "vscode",
   "mounts": [
     "source=${localEnv:HOME}/.gitconfig,target=/tmp/host-gitconfig,type=bind,readonly",
