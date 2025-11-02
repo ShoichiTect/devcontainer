@@ -1,51 +1,43 @@
-# Personal Development Environment Template
+# Claude Code Isolated Environment
 
-🚀 A comprehensive devcontainer template for personal development projects with modern tools and configurations.
+🔒 A minimal, secure devcontainer template for running Claude Code AI agent in an isolated environment.
 
-## 🛠️ Included Tools & Technologies
+## 🎯 Purpose
 
-### Shell & Terminal
-- **zsh** with **oh-my-zsh**
-- **tmux** with custom configuration
-- **exa**, **bat**, **ripgrep**, **fd** (modern CLI tools)
+This template provides a sandboxed container environment where AI agents like Claude Code can safely execute commands without access to your host filesystem. Perfect for:
+- Running AI-assisted coding tools in isolation
+- Preventing accidental host system modifications
+- Secure development environments for untrusted code execution
+- Testing and experimentation with AI code generation
 
-### Editors & IDEs
-- **Neovim** with comprehensive LSP setup
-- **VS Code** extensions and settings
+## 🛠️ Included Tools
 
-### Package Managers
-- **npm/pnpm** (Node.js)
-- **pip/pipx** (Python)
-- **brew** (Homebrew for Linux)
-- **cargo** (Rust)
-- **apt** (System packages)
+### Core Requirements
+- **Node.js** (via nvm) - Required for Claude Code CLI
+- **Claude Code CLI** - Anthropic's AI coding assistant
+- **Git** - Version control
+- **Docker** (Docker-in-Docker) - Container management
 
-### Programming Languages
-- **Node.js** (via nvm)
-- **Python** (with poetry support)
-- **Rust** (via rustup)
-- **Go**
+### Shell Environment
+- **zsh** with **oh-my-zsh** - Enhanced shell experience
+- **ripgrep**, **fd-find** - Fast search tools (used by Claude Code)
 
-### Development Tools
-- **Git** with useful aliases
-- **Docker** (Docker-in-Docker)
-- **opencode** (Claude AI CLI)
-- **Various LSP servers** for code intelligence
+### Optional Tools
+- **pnpm** - Fast Node.js package manager
+- **jq** - JSON processor
+- **unzip** - Archive extraction
 
 ## 📁 Project Structure
 
 ```
 devcontainer/
 ├── .devcontainer/
-│   ├── devcontainer.json    # VS Code devcontainer configuration
-│   ├── Dockerfile          # Custom development environment
-│   ├── dotfiles/           # Dotfiles for development environment
-│   │   ├── .zshrc          # Zsh configuration
-│   │   ├── .tmux.conf      # Tmux configuration
-│   │   └── nvim/           # Neovim configuration
+│   ├── devcontainer.json    # Container configuration with security settings
+│   ├── Dockerfile          # Minimal container image definition
+│   ├── dotfiles/
+│   │   └── .zshrc          # Minimal zsh configuration
 │   └── scripts/
 │       └── setup.sh        # Automated setup script
-├── templates/              # Project templates (add your own)
 └── README.md              # This file
 ```
 
@@ -103,44 +95,37 @@ devcontainer exec --workspace-folder /path/to/your/project zsh
 ## ⚙️ Configuration Details
 
 ### Zsh Configuration
-- **Theme**: robbyrussell (default oh-my-zsh theme)
-- **Plugins**: git, zsh-autosuggestions, zsh-syntax-highlighting, zsh-z, docker, and more
-- **Aliases**: Modern CLI tools (exa, bat, ripgrep, fd)
-- **History**: Enhanced history management
+- **Theme**: robbyrussell (oh-my-zsh default)
+- **Plugins**: git, zsh-autosuggestions, zsh-syntax-highlighting, docker
+- **Aliases**: Basic git, docker, and navigation aliases (see setup.sh)
+- **History**: Enhanced history management with deduplication
 
-### Tmux Configuration
-- **Prefix**: `Ctrl-a` (instead of default `Ctrl-b`)
-- **Mouse support**: Enabled
-- **Vim-like navigation**: `h`, `j`, `k`, `l` for pane switching
-- **Plugins**: TPM, tmux-resurrect, tmux-continuum, vim-tmux-navigator
-
-### Neovim Configuration
-- **Plugin Manager**: lazy.nvim
-- **Theme**: Catppuccin Mocha
-- **LSP**: Configured for multiple languages
-- **Features**: File explorer, fuzzy finder, autocompletion, git integration
+### Claude Code CLI
+- Installed globally via npm: `@anthropic-ai/claude-code`
+- Accessible via `claude` command
+- Configuration stored in `/home/vscode/.claude/` (persisted in volume)
 
 ## 🔧 Customization
 
-### Adding New Languages
-1. Update the Dockerfile to install language runtime
-2. Add LSP server to `dotfiles/nvim/lua/config/lsp.lua`
-3. Update setup script with language-specific tools
+### Adding More Tools
+1. Update the Dockerfile to install additional packages
+2. Modify setup.sh to configure new tools
+3. Rebuild the container
 
 ### Custom Dotfiles
-Replace files in the `dotfiles/` directory with your own configurations.
+Replace `.devcontainer/dotfiles/.zshrc` with your own zsh configuration.
 
 ### VS Code Extensions
 Modify the `extensions` array in `.devcontainer/devcontainer.json`.
 
 ## 📦 Available Aliases
 
+Aliases are automatically created by setup.sh:
+
 ### File Operations
-- `ll` → `exa -la --git`
-- `ls` → `exa`
-- `cat` → `bat`
-- `find` → `fd`
-- `grep` → `rg`
+- `ll` → `ls -lah` (detailed list)
+- `grep` → `rg` (ripgrep)
+- `find` → `fd` (fd-find)
 
 ### Git
 - `g` → `git`
@@ -149,16 +134,14 @@ Modify the `extensions` array in `.devcontainer/devcontainer.json`.
 - `gc` → `git commit`
 - `gp` → `git push`
 - `gl` → `git pull`
+- `glog` → `git log --oneline --graph`
 
 ### Docker
 - `d` → `docker`
 - `dc` → `docker-compose`
 - `dps` → `docker ps`
-
-### Tmux
-- `t` → `tmux`
-- `ta` → `tmux attach`
-- `tl` → `tmux list-sessions`
+- `di` → `docker images`
+- `dex` → `docker exec -it`
 
 ## 🛡️ Security Features
 
@@ -182,12 +165,11 @@ Modify the `extensions` array in `.devcontainer/devcontainer.json`.
 ## 🎯 Use Cases
 
 This template is perfect for:
-- **Web Development** (React, Vue, Angular, Node.js)
-- **Python Development** (Django, FastAPI, Data Science)
-- **Rust Development** (CLI tools, web services)
-- **Go Development** (Microservices, APIs)
-- **DevOps & Scripting**
-- **Personal Projects**
+- **AI-Assisted Development** - Run Claude Code safely in isolation
+- **Untrusted Code Execution** - Test or run code without host access
+- **Secure Development** - Prevent accidental system modifications
+- **Learning & Experimentation** - Safe environment for trying new tools
+- **Multi-Project Setup** - Copy `.devcontainer/` to any project for instant isolation
 
 ## 🔄 Port Forwarding
 
@@ -199,35 +181,77 @@ The following ports are automatically forwarded:
 
 ## 📝 Tips & Tricks
 
-### Tmux
-- `Ctrl-a + I` to install tmux plugins
-- `Ctrl-a + |` to split vertically
-- `Ctrl-a + -` to split horizontally
+### Using Claude Code
+```bash
+# Start Claude Code CLI
+claude
 
-### Neovim
-- `<leader>` key is set to `Space`
-- `<leader>e` to toggle file explorer
-- `<leader>ff` to find files
-- `<leader>fg` to grep in files
+# Claude Code will have access to:
+# - Project files in the workspace
+# - Git commands
+# - Docker commands
+# - Installed Node.js tools
+```
+
+### Security Verification
+```bash
+# Verify read-only root filesystem
+touch /test.txt  # Should fail with "Read-only file system"
+
+# Verify workspace access
+touch ~/test.txt  # Should succeed (volume is writable)
+cd /workspaces && touch test.txt  # Should succeed (workspace is writable)
+
+# Verify no host access
+ls /Users  # Should fail or show empty (not host /Users)
+```
 
 ### Development Workflow
-1. Start tmux: `tmux`
-2. Create development session with multiple panes
-3. Use nvim for editing
-4. Use integrated terminal for running commands
+1. Copy `.devcontainer/` to your project
+2. Run `devcontainer up --workspace-folder .`
+3. Enter container and start Claude Code
+4. Work safely in isolated environment
 
 ## 🤝 Contributing
 
-Feel free to:
-- Add new language configurations
-- Improve existing setups
-- Add useful aliases or tools
-- Create project templates
+Contributions welcome! Areas for improvement:
+- Additional security hardening
+- Performance optimizations
+- Documentation improvements
+- Bug fixes
 
 ## 📄 License
 
 This template is open source. Feel free to use and modify as needed.
 
+## ⚠️ Limitations
+
+- Container has no access to host filesystem outside project directory
+- Cannot install system packages at runtime (read-only root)
+- Limited to tools installed in Dockerfile
+- Volume data persists between restarts but can be lost if volume is deleted
+
+## 🔍 Troubleshooting
+
+### Claude Code not found
+```bash
+# Verify installation
+which claude
+npm list -g @anthropic-ai/claude-code
+
+# Reinstall if needed
+npm install -g @anthropic-ai/claude-code
+```
+
+### Permission denied errors
+- Check if trying to write to read-only filesystem
+- Use `/home/vscode` or `/workspaces` for writable areas
+
+### Container won't start
+- Check Docker is running
+- Verify devcontainer CLI is installed: `npm install -g @devcontainers/cli`
+- Review build logs for errors
+
 ---
 
-**Happy Coding!** 🎉
+**Safe AI-Assisted Coding!** 🤖🔒
