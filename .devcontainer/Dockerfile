@@ -26,20 +26,6 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | b
 # Install pnpm (optional, for Node.js projects)
 RUN bash -c "source ~/.nvm/nvm.sh && npm install -g pnpm"
 
-# Install oh-my-zsh for vscode user (skip if already exists)
-RUN if [ ! -d "$HOME/.oh-my-zsh" ]; then \
-        sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; \
-    fi
-
-# Install minimal zsh plugins
-RUN ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom} && \
-    if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then \
-        git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions; \
-    fi && \
-    if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then \
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting; \
-    fi
-
 # Install Claude Code CLI
 RUN bash -c "source ~/.nvm/nvm.sh && npm install -g @anthropic-ai/claude-code"
 
