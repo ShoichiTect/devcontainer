@@ -33,13 +33,15 @@ This template provides a sandboxed container environment where AI agents like Cl
 ```
 devcontainer/
 ├── .devcontainer/
-│   ├── devcontainer.json    # Container configuration with security settings
-│   ├── Dockerfile.slim      # Minimal container image definition (default)
+│   ├── devcontainer.json      # Container configuration with security settings
+│   ├── Dockerfile.slim        # Minimal container image definition (default)
 │   ├── dotfiles/
-│   │   └── .zshrc          # Minimal zsh configuration
+│   │   └── .zshrc            # Minimal zsh configuration
 │   └── scripts/
-│       └── setup.sh        # Automated setup script
-└── README.md              # This file
+│       ├── setup.sh          # Automated setup script (runs in container)
+│       ├── devup.sh          # Universal AI launcher with fzf selector
+│       └── install-devup.sh  # Host installer for devup command
+└── README.md                # This file
 ```
 
 ## 🚀 Quick Start
@@ -95,69 +97,71 @@ devcontainer exec --workspace-folder /path/to/your/project zsh
 
 ## 🚀 Development Commands (Recommended)
 
-For the easiest experience, add these functions to your `~/.zshrc`:
+### Universal Launcher: `devup`
 
+The easiest way to launch AI assistants in this devcontainer is using the `devup` command with **fzf interactive selection**.
+
+#### Installation
+
+Run the installer script:
 ```bash
-# Claude Code devcontainer launcher
-claude-dev() {
-  local TARGET_DIR="${1:-.}"
-  TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
-
-  if [ ! -d "$TARGET_DIR/.devcontainer" ]; then
-    echo "Error: No .devcontainer found in $TARGET_DIR"
-    return 1
-  fi
-
-  local CONTAINER_INFO=$(devcontainer up --workspace-folder "$TARGET_DIR" 2>&1)
-  local CONTAINER_ID=$(echo "$CONTAINER_INFO" | grep -o '"containerId":"[^"]*"' | head -1 | cut -d'"' -f4)
-
-  devcontainer exec --workspace-folder "$TARGET_DIR" zsh -i -c "cd /workspaces/$(basename "$TARGET_DIR") && claude"
-}
-
-# groq-code-cli devcontainer launcher (same as claude-dev but runs groq)
-groq-dev() {
-  local TARGET_DIR="${1:-.}"
-  TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
-
-  if [ ! -d "$TARGET_DIR/.devcontainer" ]; then
-    echo "Error: No .devcontainer found in $TARGET_DIR"
-    return 1
-  fi
-
-  local CONTAINER_INFO=$(devcontainer up --workspace-folder "$TARGET_DIR" 2>&1)
-  local CONTAINER_ID=$(echo "$CONTAINER_INFO" | grep -o '"containerId":"[^"]*"' | head -1 | cut -d'"' -f4)
-
-  devcontainer exec --workspace-folder "$TARGET_DIR" zsh -i -c "cd /workspaces/$(basename "$TARGET_DIR") && groq"
-}
+./.devcontainer/scripts/install-devup.sh
 ```
 
-After adding the function, reload your shell:
+This will add `devup` to your shell configuration (`~/.zshrc` or `~/.bashrc`).
+
+After installation, reload your shell:
 ```bash
-source ~/.zshrc
+source ~/.zshrc  # or source ~/.bashrc
 ```
 
-### Usage
+#### Requirements
+
+- **fzf**: Interactive fuzzy finder
+  ```bash
+  # macOS
+  brew install fzf
+
+  # Ubuntu/Debian
+  apt install fzf
+
+  # With npm
+  npm install -g fzf
+  ```
+
+- **@devcontainers/cli**: Already required for this project
+  ```bash
+  npm install -g @devcontainers/cli
+  ```
+
+#### Usage
 
 ```bash
-# Navigate to any project with .devcontainer
-cd /path/to/your/project
+# Launch from current directory (shows AI assistant selector)
+devup
 
-# Launch Claude Code CLI
-claude-dev
+# Launch from specific directory
+devup /path/to/project
 
-# Or launch groq-code-cli
-groq-dev
-
-# Or specify a directory
-claude-dev /path/to/another/project
-groq-dev /path/to/another/project
+# Select AI assistant interactively:
+# 🤖 Select AI assistant:
+# > claude
+#   groq
 ```
 
-### What it does
+#### What it does
 1. ✅ Checks if `.devcontainer` exists in the target directory
-2. ✅ Starts the devcontainer (or connects to existing one)
-3. ✅ Automatically launches the specified AI CLI tool (claude or groq) inside the container
-4. ✅ Works with any project that has a `.devcontainer` directory
+2. ✅ Shows interactive AI assistant selector (fzf)
+3. ✅ Starts the devcontainer (or connects to existing one)
+4. ✅ Automatically launches the selected AI CLI tool inside the container
+5. ✅ Works with any project that has a `.devcontainer` directory
+
+#### Customization
+
+To add more AI assistants, edit `.devcontainer/scripts/devup.sh`:
+```bash
+export DEVUP_AI_COMMANDS=("claude" "groq" "your-custom-ai")
+```
 
 ## 📦 Container Image
 
