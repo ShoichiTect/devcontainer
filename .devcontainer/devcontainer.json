@@ -1,8 +1,8 @@
 {
-  "name": "Claude Code Isolated Environment",
+  "name": "Claude Code Isolated Environment(Slim)",
   "build": {
-    "dockerfile": "Dockerfile"
-  },
+    "dockerfile": "Dockerfile.slim"
+},
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/git:1": {},
@@ -36,7 +36,8 @@
   "mounts": [
     "source=${localEnv:HOME}/.gitconfig,target=/tmp/host-gitconfig,type=bind,readonly",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly",
-    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind"
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind",
+    "source=/dev/null,target=${containerWorkspaceFolder}/.env,type=bind,readonly"
   ],
   "containerEnv": {
     "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"

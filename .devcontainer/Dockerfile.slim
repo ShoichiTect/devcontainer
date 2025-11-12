@@ -1,0 +1,46 @@
+# AI Agent 実行環境用の最小構成
+FROM debian:12-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 最小限のシステムパッケージ
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    git \
+    ca-certificates \
+    gnupg \
+    zsh \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# vscode ユーザー作成（devcontainer features との互換性のため）
+RUN useradd -m -s /usr/bin/zsh vscode && \
+    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER vscode
+WORKDIR /home/vscode
+
+# nvm + Node.js インストール
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash && \
+    bash -c "source ~/.nvm/nvm.sh && nvm install --lts && nvm use --lts && nvm alias default lts/*"
+
+# Claude Code CLI インストール
+RUN bash -c "source ~/.nvm/nvm.sh && npm install -g @anthropic-ai/claude-code"
+
+# groq-code-cli インストール（軽量化版 - ソースからビルド）
+RUN bash -c "source ~/.nvm/nvm.sh && \
+    git clone --depth 1 https://github.com/build-with-groq/groq-code-cli.git /tmp/groq-code-cli && \
+    cd /tmp/groq-code-cli && \
+    npm install && \
+    npm run build && \
+    npm pack && \
+    npm install -g groq-code-cli-*.tgz && \
+    rm -rf /tmp/groq-code-cli ~/.npm"
+
+# 環境変数設定
+ENV SHELL=/usr/bin/zsh
+ENV TERM=xterm-256color
+
+WORKDIR /workspaces
+

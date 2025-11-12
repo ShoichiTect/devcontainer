@@ -34,7 +34,7 @@ This template provides a sandboxed container environment where AI agents like Cl
 devcontainer/
 ├── .devcontainer/
 │   ├── devcontainer.json    # Container configuration with security settings
-│   ├── Dockerfile          # Minimal container image definition
+│   ├── Dockerfile.slim      # Minimal container image definition (default)
 │   ├── dotfiles/
 │   │   └── .zshrc          # Minimal zsh configuration
 │   └── scripts/
@@ -159,6 +159,18 @@ groq-dev /path/to/another/project
 3. ✅ Automatically launches the specified AI CLI tool (claude or groq) inside the container
 4. ✅ Works with any project that has a `.devcontainer` directory
 
+## 📦 Container Image
+
+This project uses **Dockerfile.slim** as the default container image definition. The slim image provides:
+
+- **Minimal base**: Built on `debian:12-slim` for smaller image size
+- **Optimized layers**: Efficient caching for faster builds
+- **Essential tools only**: Node.js (via nvm), Claude Code CLI, groq-code-cli, Git, and zsh
+- **Feature integration**: Docker-in-Docker, Git, and GitHub CLI added via devcontainer features
+- **Total size**: ~1.19GB (including Docker-in-Docker ~506MB)
+
+The slim image is optimized for AI-assisted development workflows while maintaining security and isolation.
+
 ## ⚙️ Configuration Details
 
 ### Zsh Configuration
@@ -221,7 +233,7 @@ Aliases are automatically created by setup.sh:
 ### Access Control
 - **SSH keys**: Mounted as read-only from host
 - **Git config**: Copied from host (modifiable in container)
-- **Environment variables**: Host `.env` file is isolated; container creates `.env_example` from template (doesn't overwrite existing `.env`)
+- **Environment variables**: Host `.env` file is completely isolated (masked with `/dev/null` in container, read-only); `.env_example` provided as template
 - **No host access**: Container cannot access files outside project directory
 - **Separate user**: Runs as `vscode` user, not root
 
@@ -276,9 +288,11 @@ cd /workspaces && touch test.txt  # Should succeed (workspace is writable)
 # Verify no host access
 ls /Users  # Should fail or show empty (not host /Users)
 
-# Verify .env isolation
-cat .env_example  # Should show template; your .env (if exists) remains untouched
-ls -la .env*      # .env_example is created, .env is not overwritten
+# Verify .env isolation (host .env is completely masked)
+cat .env           # Should be empty (/dev/null - host secrets are inaccessible)
+ls -la .env        # Character device (read-only)
+mount | grep .env  # Shows: /dev/null mounted on .env
+cat .env_example   # Template for creating your own .env if needed
 ```
 
 ### Development Workflow
